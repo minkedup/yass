@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "yass"
+version = "0.1.0"
+description = "Yet Another (RIT Bus) Schedule Scraper"
+authors = ["Mickey P <me@minkedup.xyz>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.scripts]
+yass = "yass:main"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.15.0"
+black = "^25.1.0"
+pylint = "^3.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
