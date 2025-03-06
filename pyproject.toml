@@ -18,6 +18,8 @@ requests = "^2.32.3"
 mypy = "^1.15.0"
 black = "^25.1.0"
 pylint = "^3.3.4"
+lxml-stubs = "^0.5.1"
+types-requests = "^2.32.0.20250306"
 
 [build-system]
 requires = ["poetry-core"]
