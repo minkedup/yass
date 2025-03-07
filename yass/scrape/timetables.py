@@ -2,7 +2,7 @@
 Scrape Timetable information from Routes.
 """
 
-from typing import Sequence, cast
+from typing import Sequence, TypeAlias, cast
 import re
 import dataclasses
 import urllib.parse
@@ -20,7 +20,7 @@ from yass.scrape.types import (
     ScrapedRoute,
     ScrapedRouteIdx,
 )
-from yass.scrape.schedules import PeriodScrape
+from yass.scrape.schedules import PeriodsScrape
 
 STOP_POSTFIX_RE = re.compile("(.*) *(.*)$")
 
@@ -93,9 +93,10 @@ def scrape_time_table(ctx: ScrapeContext, route: ScrapedRoute) -> ScrapedTimeTab
     return ScrapedTimeTable(columns, values)
 
 
-def scrape_time_tables(
-    ctx: ScrapeContext, scrape: PeriodScrape
-) -> Sequence[dict[ScrapedRouteIdx, ScrapedTimeTable]]:
+TimeTablesScrape: TypeAlias = Sequence[dict[ScrapedRouteIdx, ScrapedTimeTable]]
+
+
+def scrape_time_tables(ctx: ScrapeContext, scrape: PeriodsScrape) -> TimeTablesScrape:
     """
     Scrape the TimeTables for each Route within a ScrapedGroupParts.
     """

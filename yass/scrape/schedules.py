@@ -24,7 +24,7 @@ ROUTE_LINK_RE = re.compile(r"^[0-9]{1,2} .*$")
 
 
 @dataclasses.dataclass
-class PeriodScrape:
+class PeriodsScrape:
     """
     Scrapes from the main page.
     """
@@ -137,7 +137,7 @@ def _grp_parts(ctx: ScrapeContext, grp: lxml.html.Element) -> ScrapedPeriodParts
     return ScrapedPeriodParts(routes, sub_periods, sub_period_to_routes)
 
 
-def scrape_periods(ctx: ScrapeContext) -> PeriodScrape:
+def scrape_periods(ctx: ScrapeContext) -> PeriodsScrape:
     """
     Scrape schedules from the root page to discover existing routes.
     """
@@ -169,4 +169,4 @@ def scrape_periods(ctx: ScrapeContext) -> PeriodScrape:
         parts = _grp_parts(ctx, period_grp)
         period_parts.append(parts)
 
-    return PeriodScrape(periods, period_parts)
+    return PeriodsScrape(periods, period_parts)
