@@ -11,7 +11,14 @@ import lxml.html
 from yass.types import ScrapeContext
 from yass.const import ROOT_SCHEDULE_URL
 
-from yass.scrape.types import ScrapedPeriod, ScrapedSubPeriod, ScrapedRoute
+from yass.scrape.types import (
+    ScrapedPeriodParts,
+    ScrapedSubPeriodIdx,
+    ScrapedRouteIdx,
+    ScrapedPeriod,
+    ScrapedSubPeriod,
+    ScrapedRoute,
+)
 
 ROUTE_LINK_RE = re.compile(r"^[0-9]{1,2} .*$")
 
@@ -46,21 +53,6 @@ def _get_h3_group(
     other = group[1]
 
     return other
-
-
-ScrapedRouteIdx = NewType("ScrapedRouteIdx", int)
-ScrapedSubPeriodIdx = NewType("ScrapedSubPeriodIdx", int)
-
-
-@dataclasses.dataclass(frozen=True)
-class ScrapedPeriodParts:
-    """
-    The scraped sub-components of a period.
-    """
-
-    routes: Sequence[ScrapedRoute]
-    sub_periods: Sequence[ScrapedSubPeriod]
-    sub_period_to_routes: dict[ScrapedSubPeriodIdx | None, list[ScrapedRouteIdx]]
 
 
 def _grp_parts(ctx: ScrapeContext, grp: lxml.html.Element) -> ScrapedPeriodParts:
