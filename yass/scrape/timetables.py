@@ -15,6 +15,7 @@ from yass.const import ROOT_SCHEDULE_URL
 from yass.scrape.types import (
     ScrapedStop,
     ScrapedStopPart,
+    ScrapedTimeTable,
     ScrapedTimeTableColumn,
     ScrapedTimeTableCell,
     ScrapedRoute,
@@ -23,16 +24,6 @@ from yass.scrape.types import (
 from yass.scrape.periods import PeriodsScrape
 
 STOP_POSTFIX_RE = re.compile("(.*) *(.*)$")
-
-
-@dataclasses.dataclass(frozen=True)
-class ScrapedTimeTable:
-    """
-    The Timetable.
-    """
-
-    columns: Sequence[ScrapedTimeTableColumn]
-    values: Sequence[Sequence[ScrapedTimeTableCell]]
 
 
 def scrape_time_table(ctx: ScrapeContext, route: ScrapedRoute) -> ScrapedTimeTable:

@@ -56,3 +56,13 @@ ScrapedStopPart: TypeAlias = str | None
 
 ScrapedTimeTableColumn: TypeAlias = tuple[ScrapedStop, str | None]
 ScrapedTimeTableCell: TypeAlias = str | None
+
+
+@dataclasses.dataclass(frozen=True)
+class ScrapedTimeTable:
+    """
+    The Timetable.
+    """
+
+    columns: Sequence[ScrapedTimeTableColumn]
+    values: Sequence[Sequence[ScrapedTimeTableCell]]
