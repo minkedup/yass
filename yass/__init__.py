@@ -79,4 +79,5 @@ def main() -> None:
 
         return None
 
-    print(json.dumps(ast, indent=4, default=encode))
+    json.dump(ast, sys.stdout, indent=4, default=encode)
+    sys.stdout.write("\n")
