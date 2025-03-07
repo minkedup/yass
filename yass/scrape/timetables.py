@@ -11,7 +11,7 @@ import lxml.html
 
 from yass.types import ScrapeContext
 from yass.const import ROOT_SCHEDULE_URL
-from yass.schedules import RawRoute
+from yass.scrape.schedules import RawRoute
 
 STOP_POSTFIX_RE = re.compile("(.*) (Arrival|Departure)$")
 

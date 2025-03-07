@@ -15,8 +15,8 @@ import requests
 import lxml.html
 
 from yass.types import ScrapeContext
-from yass.schedules import ScheduleScrape, RawPeriod, RawRoute, scrape_schedules
-from yass.timetables import TimetableScrape, scrape_timetable
+from yass.scrape.schedules import ScheduleScrape, RawPeriod, RawRoute, scrape_schedules
+from yass.scrape.timetables import TimetableScrape, scrape_timetable
 
 
 def ext_routes(scraped: ScheduleScrape) -> frozenset[RawRoute]:
