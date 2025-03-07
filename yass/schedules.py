@@ -152,7 +152,6 @@ def scrape_schedules(ctx: ScrapeContext) -> ScheduleScrape:
                 cur_period = maybe_raw
                 continue
 
-            assert isinstance(maybe_raw, RawRoute)
             if cur_period is None:
                 ctx.logger.warning(
                     "could not find a matching period for route %s", maybe_raw
