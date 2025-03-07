@@ -2,7 +2,7 @@
 Scraping Types.
 """
 
-from typing import TypeAlias, Literal
+from typing import TypeAlias
 import dataclasses
 
 
