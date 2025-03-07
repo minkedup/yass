@@ -38,26 +38,40 @@ def ext_routes(scraped: ScheduleScrape) -> frozenset[RawRoute]:
     return frozenset(routes)
 
 
+def get_logger(verbose: bool) -> logging.Logger:
+    """
+    Setup and return a Logger.
+    """
+
+    level = logging.INFO if verbose else logging.WARNING
+
+    root = logging.getLogger()
+    root.setLevel(level)
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(level)
+
+    formatter = logging.Formatter("%(levelname)s: %(message)s")
+    handler.setFormatter(formatter)
+    root.addHandler(handler)
+
+    return root
+
+
 def main() -> None:
     """
     Parse arguments and run Scraper.
     """
 
     parser = argparse.ArgumentParser(prog="yass")
-    _args = parser.parse_args()
+    parser.add_argument(
+        "-v", "--verbose", help="enable more verbose output", action="store_true"
+    )
+    args = parser.parse_args()
 
-    root = logging.getLogger()
-    root.setLevel(logging.WARNING)
-
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.DEBUG)
-
-    formatter = logging.Formatter("%(levelname)s: %(message)s")
-    handler.setFormatter(formatter)
-    root.addHandler(handler)
-
+    logger = get_logger(args.verbose)
     session = requests.Session()
-    ctx = ScrapeContext(root, session)
+    ctx = ScrapeContext(logger, session)
 
     schedules = scrape_schedules(ctx)
     routes = ext_routes(scraped)
