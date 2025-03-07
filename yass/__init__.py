@@ -21,19 +21,7 @@ from yass.scrape.schedules import (
     ScrapedRoute,
     scrape_periods,
 )
-from yass.scrape.timetables import TimetableScrape, scrape_timetable
-
-
-def ext_routes(scraped: PeriodScrape) -> frozenset[ScrapedRoute]:
-    """
-    Get all RawRoutes in a ScheduleScrape.
-    """
-    parts = scraped.period_parts
-    routes: Iterable[ScrapedRoute] = itertools.chain.from_iterable(
-        map(lambda part: part.routes, parts)
-    )
-
-    return frozenset(routes)
+from yass.scrape.timetables import ScrapedTimeTable, scrape_time_tables
 
 
 def get_logger(verbose: bool) -> logging.Logger:
@@ -71,11 +59,5 @@ def main() -> None:
     session = requests.Session()
     ctx = ScrapeContext(logger, session)
 
-    schedule_scrape = scrape_periods(ctx)
-    routes = ext_routes(schedule_scrape)
-
-    route_to_time_table: dict[ScrapedRoute, TimetableScrape] = {}
-
-    for route in routes:
-        time_table = scrape_timetable(ctx, route)
-        route_to_time_table[route] = time_table
+    s_periods = scrape_periods(ctx)
+    part_route_to_timetables = scrape_time_tables(ctx, s_periods)

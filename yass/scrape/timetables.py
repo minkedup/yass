@@ -12,23 +12,30 @@ import lxml.html
 from yass.types import ScrapeContext
 from yass.const import ROOT_SCHEDULE_URL
 
-from yass.scrape.types import ScrapedStop, ScrapedStopPart, ScrapedColumn, ScrapedCell
-from yass.scrape.schedules import ScrapedRoute
+from yass.scrape.types import (
+    ScrapedStop,
+    ScrapedStopPart,
+    ScrapedTimeTableColumn,
+    ScrapedTimeTableCell,
+    ScrapedRoute,
+    ScrapedRouteIdx,
+)
+from yass.scrape.schedules import PeriodScrape
 
-STOP_POSTFIX_RE = re.compile("(.*) (Arrival|Departure)$")
+STOP_POSTFIX_RE = re.compile("(.*) *(.*)$")
 
 
 @dataclasses.dataclass(frozen=True)
-class TimetableScrape:
+class ScrapedTimeTable:
     """
     The Timetable.
     """
 
-    columns: Sequence[ScrapedColumn]
-    values: Sequence[Sequence[ScrapedCell]]
+    columns: Sequence[ScrapedTimeTableColumn]
+    values: Sequence[Sequence[ScrapedTimeTableCell]]
 
 
-def scrape_timetable(ctx: ScrapeContext, route: ScrapedRoute) -> TimetableScrape:
+def scrape_time_table(ctx: ScrapeContext, route: ScrapedRoute) -> ScrapedTimeTable:
     """
     Scrape Timetables from a route-specific page.
     """
@@ -54,8 +61,8 @@ def scrape_timetable(ctx: ScrapeContext, route: ScrapedRoute) -> TimetableScrape
     th_els = table.xpath("//thead[1]//th")
     stops: set[str] = set()
 
-    columns: list[ScrapedColumn] = []
-    values: list[list[ScrapedCell]] = []
+    columns: list[ScrapedTimeTableColumn] = []
+    values: list[list[ScrapedTimeTableCell]] = []
 
     for th_el in th_els:
         stripped = th_el.text.strip()
@@ -83,4 +90,27 @@ def scrape_timetable(ctx: ScrapeContext, route: ScrapedRoute) -> TimetableScrape
             value = col_els[j].text.strip()
             values[i][j] = value
 
-    return TimetableScrape(columns, values)
+    return ScrapedTimeTable(columns, values)
+
+
+def scrape_time_tables(
+    ctx: ScrapeContext, scrape: PeriodScrape
+) -> Sequence[dict[ScrapedRouteIdx, ScrapedTimeTable]]:
+    """
+    Scrape the TimeTables for each Route within a ScrapedGroupParts.
+    """
+
+    part_timetables = []
+
+    for part in scrape.period_parts:
+        route_idx_to_time_table: dict[ScrapedRouteIdx, ScrapedTimeTable] = {}
+
+        for i, route in enumerate(part.routes):
+            idx = ScrapedRouteIdx(i)
+
+            time_table = scrape_time_table(ctx, route)
+            route_idx_to_time_table[idx] = time_table
+
+        part_timetables.append(route_idx_to_time_table)
+
+    return part_timetables

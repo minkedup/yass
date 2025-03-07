@@ -54,5 +54,5 @@ class ScrapedPeriodParts:
 ScrapedStop: TypeAlias = str
 ScrapedStopPart: TypeAlias = str | None
 
-ScrapedColumn: TypeAlias = tuple[ScrapedStop, str | None]
-ScrapedCell: TypeAlias = str | None
+ScrapedTimeTableColumn: TypeAlias = tuple[ScrapedStop, str | None]
+ScrapedTimeTableCell: TypeAlias = str | None
