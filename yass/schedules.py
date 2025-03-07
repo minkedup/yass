@@ -61,7 +61,7 @@ def scrape_schedules(ctx: ScrapeContext) -> ScheduleScrape:
     response = ctx.session.get(ROOT_SCHEDULE_URL)
     assert response.ok
 
-    tree: lxml.html.etree.ElementTree = lxml.html.fromstring(response.text)
+    tree: lxml.html.HtmlElement = lxml.html.fromstring(response.text)
     query = tree.xpath("//body/descendant::h3")
 
     assert isinstance(query, list)
