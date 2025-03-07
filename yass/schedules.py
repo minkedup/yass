@@ -58,6 +58,7 @@ def scrape_schedules(ctx: ScrapeContext) -> ScheduleScrape:
     Scrape schedules from the root page to discover existing routes.
     """
 
+    ctx.logger.info(f"GET {ROOT_SCHEDULE_URL}")
     response = ctx.session.get(ROOT_SCHEDULE_URL)
     assert response.ok
 
