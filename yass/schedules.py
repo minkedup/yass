@@ -40,6 +40,7 @@ class RawRoute:
 
     name: str
     href: str
+    begins: str | None
 
 
 @dataclasses.dataclass
@@ -114,6 +115,12 @@ def scrape_schedules(ctx: ScrapeContext) -> ScheduleScrape:
         if len(span) < 1:
             return None
 
+        begins = (
+            span[1].text.strip()
+            if len(span) > 1 and len(span[1].text.strip()) != 0
+            else None
+        )
+
         link = span[0]
         text = link.text.strip()
 
@@ -124,7 +131,7 @@ def scrape_schedules(ctx: ScrapeContext) -> ScheduleScrape:
         if "href" not in attributes:
             return None
 
-        return RawRoute(text, attributes["href"])
+        return RawRoute(text, attributes["href"], begins)
 
     schedule_neighbors = map(get_schedule_neighbor, schedule_els)
     schedule_to_periods = {}
