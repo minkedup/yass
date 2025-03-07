@@ -12,8 +12,8 @@ import lxml.html
 from yass.types import ScrapeContext
 from yass.const import ROOT_SCHEDULE_URL
 
-from yass.scrape.types import RawStop, RawPart, RawColumn, RawCell
-from yass.scrape.schedules import RawRoute
+from yass.scrape.types import ScrapedStop, ScrapedStopPart, ScrapedColumn, ScrapedCell
+from yass.scrape.schedules import ScrapedRoute
 
 STOP_POSTFIX_RE = re.compile("(.*) (Arrival|Departure)$")
 
@@ -24,11 +24,11 @@ class TimetableScrape:
     The Timetable.
     """
 
-    columns: Sequence[RawColumn]
-    values: Sequence[Sequence[RawCell]]
+    columns: Sequence[ScrapedColumn]
+    values: Sequence[Sequence[ScrapedCell]]
 
 
-def scrape_timetable(ctx: ScrapeContext, route: RawRoute) -> TimetableScrape:
+def scrape_timetable(ctx: ScrapeContext, route: ScrapedRoute) -> TimetableScrape:
     """
     Scrape Timetables from a route-specific page.
     """
@@ -54,15 +54,17 @@ def scrape_timetable(ctx: ScrapeContext, route: RawRoute) -> TimetableScrape:
     th_els = table.xpath("//thead[1]//th")
     stops: set[str] = set()
 
-    columns: list[RawColumn] = []
-    values: list[list[RawCell]] = []
+    columns: list[ScrapedColumn] = []
+    values: list[list[ScrapedCell]] = []
 
     for th_el in th_els:
         stripped = th_el.text.strip()
         match = STOP_POSTFIX_RE.match(stripped)
 
-        name: RawStop = stripped if match is None else match[1]
-        part: RawPart = None if match is None else cast(RawPart, match[2])
+        name: ScrapedStop = stripped if match is None else match[1]
+        part: ScrapedStopPart = (
+            None if match is None else cast(ScrapedStopPart, match[2])
+        )
 
         stops.add(name)
         columns.append((name, part))

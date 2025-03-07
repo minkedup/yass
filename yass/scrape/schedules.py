@@ -11,7 +11,7 @@ import lxml.html
 from yass.types import ScrapeContext
 from yass.const import ROOT_SCHEDULE_URL
 
-from yass.scrape.types import RawSchedule, RawPeriod, RawRoute
+from yass.scrape.types import ScrapedPeriod, ScrapedSubPeriod, ScrapedRoute
 
 ROUTE_LINK_RE = re.compile(r"^[0-9]{1,2} .*$")
 
@@ -22,7 +22,9 @@ class ScheduleScrape:
     Scraped routes from the main root page.
     """
 
-    schedules: dict[RawSchedule, dict[RawPeriod, MutableSequence[RawRoute]]]
+    schedules: dict[
+        ScrapedPeriod, dict[ScrapedSubPeriod, MutableSequence[ScrapedRoute]]
+    ]
 
 
 def scrape_schedules(ctx: ScrapeContext) -> ScheduleScrape:
@@ -69,7 +71,7 @@ def scrape_schedules(ctx: ScrapeContext) -> ScheduleScrape:
 
     def try_extract(
         group: lxml.html.Element,
-    ) -> RawPeriod | RawRoute | None:
+    ) -> ScrapedSubPeriod | ScrapedRoute | None:
         """
         Extract periods (e.g. weekday shuttle) and routes (e.g. 1 off campus
         express) from deeply nested divs.
@@ -80,7 +82,7 @@ def scrape_schedules(ctx: ScrapeContext) -> ScheduleScrape:
         tlt = group[0]
         if tlt.tag == "h4":
             text = tlt.text.strip()
-            return RawPeriod(text)
+            return ScrapedSubPeriod(text)
 
         if len(tlt) != 1:
             return None
@@ -105,23 +107,23 @@ def scrape_schedules(ctx: ScrapeContext) -> ScheduleScrape:
         if "href" not in attributes:
             return None
 
-        return RawRoute(text, attributes["href"], begins)
+        return ScrapedRoute(text, attributes["href"], begins)
 
     schedule_neighbors = map(get_schedule_neighbor, schedule_els)
     schedule_to_periods = {}
 
     for schedule_el, neighbor in zip(schedule_els, schedule_neighbors):
-        schedule = RawSchedule(schedule_el.text)
+        schedule = ScrapedPeriod(schedule_el.text)
 
         cur_period = None
-        period_to_routes: dict[RawPeriod, MutableSequence[RawRoute]] = {}
+        period_to_routes: dict[ScrapedSubPeriod, MutableSequence[ScrapedRoute]] = {}
 
         for div in neighbor:
             maybe_raw = try_extract(div)
             if maybe_raw is None:
                 continue
 
-            if isinstance(maybe_raw, RawPeriod):
+            if isinstance(maybe_raw, ScrapedSubPeriod):
                 period_to_routes[maybe_raw] = []
                 cur_period = maybe_raw
                 continue

@@ -7,7 +7,7 @@ import dataclasses
 
 
 @dataclasses.dataclass(frozen=True)
-class RawSchedule:
+class ScrapedPeriod:
     """
     A Schedule (e.g. "Spring 2025 Shuttle Schedule").
     """
@@ -16,7 +16,7 @@ class RawSchedule:
 
 
 @dataclasses.dataclass(frozen=True)
-class RawPeriod:
+class ScrapedSubPeriod:
     """
     A Period (e.g. "Weekday Shuttle Schedules and Maps", "Weekend Shuttle
     Schedules and Maps").
@@ -26,7 +26,7 @@ class RawPeriod:
 
 
 @dataclasses.dataclass(frozen=True)
-class RawRoute:
+class ScrapedRoute:
     """
     A Route (e.g. "1 Off Campus Express").
     """
@@ -36,8 +36,8 @@ class RawRoute:
     begins: str | None
 
 
-RawStop: TypeAlias = str
-RawPart: TypeAlias = Literal["Arrival"] | Literal["Departure"] | None
+ScrapedStop: TypeAlias = str
+ScrapedStopPart: TypeAlias = str | None
 
-RawColumn: TypeAlias = tuple[RawStop, str | None]
-RawCell: TypeAlias = str | None
+ScrapedColumn: TypeAlias = tuple[ScrapedStop, str | None]
+ScrapedCell: TypeAlias = str | None

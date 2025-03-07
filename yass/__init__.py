@@ -15,27 +15,32 @@ import requests
 import lxml.html
 
 from yass.types import ScrapeContext
-from yass.scrape.schedules import ScheduleScrape, RawPeriod, RawRoute, scrape_schedules
+from yass.scrape.schedules import (
+    ScheduleScrape,
+    ScrapedSubPeriod,
+    ScrapedRoute,
+    scrape_schedules,
+)
 from yass.scrape.timetables import TimetableScrape, scrape_timetable
 
 
-def ext_routes(scraped: ScheduleScrape) -> frozenset[RawRoute]:
+def ext_routes(scraped: ScheduleScrape) -> frozenset[ScrapedRoute]:
     """
     Get all RawRoutes in a ScheduleScrape.
     """
     schedules = scraped.schedules
 
-    period_to_routes: Iterable[dict[RawPeriod, MutableSequence[RawRoute]]] = (
-        schedules.values()
-    )
+    period_to_routes: Iterable[
+        dict[ScrapedSubPeriod, MutableSequence[ScrapedRoute]]
+    ] = schedules.values()
 
     def extract(
-        mapping: dict[RawPeriod, MutableSequence[RawRoute]]
-    ) -> Iterable[RawRoute]:
+        mapping: dict[ScrapedSubPeriod, MutableSequence[ScrapedRoute]],
+    ) -> Iterable[ScrapedRoute]:
         return itertools.chain.from_iterable(mapping.values())
 
-    iterable: Iterable[Iterable[RawRoute]] = map(extract, period_to_routes)
-    routes: Iterable[RawRoute] = itertools.chain.from_iterable(iterable)
+    iterable: Iterable[Iterable[ScrapedRoute]] = map(extract, period_to_routes)
+    routes: Iterable[ScrapedRoute] = itertools.chain.from_iterable(iterable)
 
     return frozenset(routes)
 
@@ -78,7 +83,7 @@ def main() -> None:
     schedule_scrape = scrape_schedules(ctx)
     routes = ext_routes(schedule_scrape)
 
-    route_to_timetable: dict[RawRoute, TimetableScrape] = {}
+    route_to_timetable: dict[ScrapedRoute, TimetableScrape] = {}
 
     for route in routes:
         timetable_scrape = scrape_timetable(ctx, route)
