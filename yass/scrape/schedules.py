@@ -11,37 +11,9 @@ import lxml.html
 from yass.types import ScrapeContext
 from yass.const import ROOT_SCHEDULE_URL
 
+from yass.scrape.types import RawSchedule, RawPeriod, RawRoute
+
 ROUTE_LINK_RE = re.compile(r"^[0-9]{1,2} .*$")
-
-
-@dataclasses.dataclass(frozen=True)
-class RawSchedule:
-    """
-    A Schedule (e.g. "Spring 2025 Shuttle Schedule").
-    """
-
-    name: str
-
-
-@dataclasses.dataclass(frozen=True)
-class RawPeriod:
-    """
-    A Period (e.g. "Weekday Shuttle Schedules and Maps", "Weekend Shuttle
-    Schedules and Maps").
-    """
-
-    name: str
-
-
-@dataclasses.dataclass(frozen=True)
-class RawRoute:
-    """
-    A Route (e.g. "1 Off Campus Express").
-    """
-
-    name: str
-    href: str
-    begins: str | None
 
 
 @dataclasses.dataclass

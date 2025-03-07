@@ -2,7 +2,7 @@
 Scrape Timetable information from Routes.
 """
 
-from typing import Sequence, TypeAlias, Literal, cast
+from typing import Sequence, cast
 import re
 import dataclasses
 import urllib.parse
@@ -11,15 +11,11 @@ import lxml.html
 
 from yass.types import ScrapeContext
 from yass.const import ROOT_SCHEDULE_URL
+
+from yass.scrape.types import RawStop, RawPart, RawColumn, RawCell
 from yass.scrape.schedules import RawRoute
 
 STOP_POSTFIX_RE = re.compile("(.*) (Arrival|Departure)$")
-
-RawStop: TypeAlias = str
-RawPart: TypeAlias = Literal["Arrival"] | Literal["Departure"] | None
-
-RawColumn: TypeAlias = tuple[RawStop, str | None]
-RawCell: TypeAlias = str | None
 
 
 @dataclasses.dataclass(frozen=True)
