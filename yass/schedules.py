@@ -1,4 +1,5 @@
 """
+Parse Schedules from the main campus shuttles page.
 """
 
 from typing import MutableSequence, cast
@@ -8,9 +9,9 @@ import dataclasses
 import lxml.html
 
 from yass.types import ScrapeContext
+from yass.const import ROOT_SCHEDULE_URL
 
 ROUTE_LINK_RE = re.compile(r"^[0-9]{1,2} .*$")
-RIT_SCHEDULES_URL = "https://www.rit.edu/parking/campus-shuttles"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -57,7 +58,7 @@ def scrape_schedules(ctx: ScrapeContext) -> ScheduleScrape:
     Scrape schedules from the root page to discover existing routes.
     """
 
-    response = ctx.session.get(RIT_SCHEDULES_URL)
+    response = ctx.session.get(ROOT_SCHEDULE_URL)
     assert response.ok
 
     tree: lxml.html.etree.ElementTree = lxml.html.fromstring(response.text)
