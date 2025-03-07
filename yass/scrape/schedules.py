@@ -2,7 +2,7 @@
 Parse Schedules from the main campus shuttles page.
 """
 
-from typing import MutableSequence, Sequence, NewType, cast
+from typing import Sequence, cast
 import re
 import dataclasses
 
@@ -29,7 +29,8 @@ class PeriodScrape:
     Scrapes from the main page.
     """
 
-    periods: dict[ScrapedPeriod, dict[ScrapedSubPeriod, MutableSequence[ScrapedRoute]]]
+    periods: Sequence[ScrapedPeriod]
+    period_parts: Sequence[ScrapedPeriodParts]
 
 
 def _get_h3_group(
@@ -159,11 +160,13 @@ def scrape_periods(ctx: ScrapeContext) -> PeriodScrape:
         return ScrapedPeriod(text)
 
     period_h3_els = list(filter(is_period_el, h3_els))
+
     periods = list(map(scrape_period, period_h3_els))
+    period_parts = []
 
-    period_grps = zip(range(len(periods)), map(_get_h3_group, period_h3_els))
-    for i_period, period_grp in period_grps:
+    period_grps = map(_get_h3_group, period_h3_els)
+    for period_grp in period_grps:
         parts = _grp_parts(ctx, period_grp)
-        print(parts)
+        period_parts.append(parts)
 
-    return PeriodScrape({})
+    return PeriodScrape(periods, period_parts)

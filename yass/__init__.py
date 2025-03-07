@@ -28,19 +28,10 @@ def ext_routes(scraped: PeriodScrape) -> frozenset[ScrapedRoute]:
     """
     Get all RawRoutes in a ScheduleScrape.
     """
-    schedules = scraped.periods
-
-    period_to_routes: Iterable[
-        dict[ScrapedSubPeriod, MutableSequence[ScrapedRoute]]
-    ] = schedules.values()
-
-    def extract(
-        mapping: dict[ScrapedSubPeriod, MutableSequence[ScrapedRoute]],
-    ) -> Iterable[ScrapedRoute]:
-        return itertools.chain.from_iterable(mapping.values())
-
-    iterable: Iterable[Iterable[ScrapedRoute]] = map(extract, period_to_routes)
-    routes: Iterable[ScrapedRoute] = itertools.chain.from_iterable(iterable)
+    parts = scraped.period_parts
+    routes: Iterable[ScrapedRoute] = itertools.chain.from_iterable(
+        map(lambda part: part.routes, parts)
+    )
 
     return frozenset(routes)
 
@@ -83,8 +74,8 @@ def main() -> None:
     schedule_scrape = scrape_periods(ctx)
     routes = ext_routes(schedule_scrape)
 
-    route_to_timetable: dict[ScrapedRoute, TimetableScrape] = {}
+    route_to_time_table: dict[ScrapedRoute, TimetableScrape] = {}
 
     for route in routes:
-        timetable_scrape = scrape_timetable(ctx, route)
-        route_to_timetable[route] = timetable_scrape
+        time_table = scrape_timetable(ctx, route)
+        route_to_time_table[route] = time_table
