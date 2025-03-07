@@ -16,19 +16,19 @@ import lxml.html
 
 from yass.types import ScrapeContext
 from yass.scrape.schedules import (
-    ScheduleScrape,
+    PeriodScrape,
     ScrapedSubPeriod,
     ScrapedRoute,
-    scrape_schedules,
+    scrape_periods,
 )
 from yass.scrape.timetables import TimetableScrape, scrape_timetable
 
 
-def ext_routes(scraped: ScheduleScrape) -> frozenset[ScrapedRoute]:
+def ext_routes(scraped: PeriodScrape) -> frozenset[ScrapedRoute]:
     """
     Get all RawRoutes in a ScheduleScrape.
     """
-    schedules = scraped.schedules
+    schedules = scraped.periods
 
     period_to_routes: Iterable[
         dict[ScrapedSubPeriod, MutableSequence[ScrapedRoute]]
@@ -80,7 +80,7 @@ def main() -> None:
     session = requests.Session()
     ctx = ScrapeContext(logger, session)
 
-    schedule_scrape = scrape_schedules(ctx)
+    schedule_scrape = scrape_periods(ctx)
     routes = ext_routes(schedule_scrape)
 
     route_to_timetable: dict[ScrapedRoute, TimetableScrape] = {}
