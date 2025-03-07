@@ -23,8 +23,6 @@ from yass.scrape.types import (
 )
 from yass.scrape.periods import PeriodsScrape
 
-STOP_POSTFIX_RE = re.compile("(.*) *(.*)$")
-
 
 def scrape_time_table(ctx: ScrapeContext, route: ScrapedRoute) -> ScrapedTimeTable:
     """
@@ -56,16 +54,10 @@ def scrape_time_table(ctx: ScrapeContext, route: ScrapedRoute) -> ScrapedTimeTab
     values: list[list[ScrapedTimeTableCell]] = []
 
     for th_el in th_els:
-        stripped = th_el.text.strip()
-        match = STOP_POSTFIX_RE.match(stripped)
-
-        name: ScrapedStop = stripped if match is None else match[1]
-        part: ScrapedStopPart = (
-            None if match is None else cast(ScrapedStopPart, match[2])
-        )
+        name = th_el.text.strip()
 
         stops.add(name)
-        columns.append((name, part))
+        columns.append(name)
 
     row_els = table.xpath("//tbody[1]//tr")
     for i, row_el in enumerate(row_els):
