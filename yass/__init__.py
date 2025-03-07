@@ -5,6 +5,7 @@ Yet Another (RIT Bus) Schedule Scraper.
 from typing import MutableSequence, TypeAlias, Iterable, Literal, cast
 import re
 import sys
+import json
 import logging
 import argparse
 import itertools
@@ -15,6 +16,7 @@ import lxml.html
 
 from yass.types import ScrapeContext
 from yass.schedules import ScheduleScrape, RawPeriod, RawRoute, scrape_schedules
+from yass.timetables import TimetableScrape, scrape_timetable
 
 
 def ext_routes(scraped: ScheduleScrape) -> frozenset[RawRoute]:
@@ -73,5 +75,11 @@ def main() -> None:
     session = requests.Session()
     ctx = ScrapeContext(logger, session)
 
-    schedules = scrape_schedules(ctx)
-    routes = ext_routes(scraped)
+    schedule_scrape = scrape_schedules(ctx)
+    routes = ext_routes(schedule_scrape)
+
+    route_to_timetable: dict[RawRoute, TimetableScrape] = {}
+
+    for route in routes:
+        timetable_scrape = scrape_timetable(ctx, route)
+        route_to_timetable[route] = timetable_scrape
