@@ -20,7 +20,7 @@ from yass.scrape.types import (
     ScrapedRoute,
     ScrapedRouteIdx,
 )
-from yass.scrape.schedules import PeriodsScrape
+from yass.scrape.periods import PeriodsScrape
 
 STOP_POSTFIX_RE = re.compile("(.*) *(.*)$")
 

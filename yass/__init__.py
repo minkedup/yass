@@ -15,8 +15,8 @@ import requests
 import lxml.html
 
 from yass.types import ScrapeContext
-from yass.scrape.schedules import (
-    PeriodScrape,
+from yass.scrape.periods import (
+    PeriodsScrape,
     ScrapedSubPeriod,
     ScrapedRoute,
     scrape_periods,
@@ -60,4 +60,4 @@ def main() -> None:
     ctx = ScrapeContext(logger, session)
 
     s_periods = scrape_periods(ctx)
-    part_route_to_timetables = scrape_time_tables(ctx, s_periods)
+    s_time_tables = scrape_time_tables(ctx, s_periods)
