@@ -77,10 +77,10 @@ class AstBuilder:
             time_tables=self.time_tables,
             periods=self.periods,
             sub_periods=self.sub_periods,
-            route_stops=self.route_stops,  # type: ignore
+            route_stops=self.route_stops,
             route_time_table=self.route_time_table,
-            period_to_sub_periods=self.period_to_sub_periods,  # type: ignore
-            sub_period_routes=self.sub_period_routes,  # type: ignore
+            period_to_sub_periods=self.period_to_sub_periods,
+            sub_period_routes=self.sub_period_routes,
         )
 
 

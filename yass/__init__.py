@@ -5,7 +5,6 @@ Yet Another (RIT Bus) Schedule Scraper.
 from typing import MutableSequence, TypeAlias, Iterable, Literal, Any, cast
 import re
 import sys
-import json
 import enum
 import logging
 import argparse
@@ -13,6 +12,7 @@ import datetime
 import itertools
 import dataclasses
 
+import serde.json
 import requests
 import lxml.html
 
@@ -67,17 +67,5 @@ def main() -> None:
 
     ast = parse_ast(s_periods, s_time_tables)
 
-    def encode(thing: Any):
-        if dataclasses.is_dataclass(thing):
-            return dataclasses.asdict(thing)  # type: ignore
-        if isinstance(thing, datetime.date):
-            return thing.isoformat()
-        if isinstance(thing, datetime.time):
-            return thing.isoformat()
-        if isinstance(thing, enum.Enum):
-            return thing.value
-
-        return None
-
-    json.dump(ast, sys.stdout, indent=4, default=encode)
-    sys.stdout.write("\n")
+    serialized = serde.json.to_json(ast, indent=4)
+    print(serialized)

@@ -2,10 +2,12 @@
 An AST.
 """
 
-from typing import Sequence, TypeAlias, NewType
+from typing import TypeAlias, NewType
 import enum
 import datetime
 import dataclasses
+
+import serde
 
 
 class StopPart(enum.Enum):
@@ -25,20 +27,20 @@ TimeTableColumn: TypeAlias = tuple[StopIdx, StopPart | None]
 TimeTableCell: TypeAlias = datetime.time | None
 
 
-@dataclasses.dataclass(frozen=True)
+@serde.serde
 class TimeTable:
     """
     A TimeTable (mapping of Stop + StopPart to rows of times).
     """
 
-    cols: Sequence[TimeTableColumn]
-    time_matrix: Sequence[Sequence[TimeTableCell]]
+    cols: list[TimeTableColumn]
+    time_matrix: list[list[TimeTableCell]]
 
 
 TimeTableIdx = NewType("TimeTableIdx", int)
 
 
-@dataclasses.dataclass(frozen=True)
+@serde.serde
 class SubPeriod:
     """
     A SubPeriod (e.g. Weekday, Weekend).
@@ -50,7 +52,7 @@ class SubPeriod:
 SubPeriodIdx = NewType("SubPeriodIdx", int)
 
 
-@dataclasses.dataclass(frozen=True)
+@serde.serde
 class Route:
     """
     A Route (e.g. 3 RIT Inn).
@@ -64,7 +66,7 @@ class Route:
 RouteIdx = NewType("RouteIdx", int)
 
 
-@dataclasses.dataclass(frozen=True)
+@serde.serde
 class Period:
     """
     A Period (e.g. Spring 2025 Shuttle Schedule).
@@ -76,21 +78,21 @@ class Period:
 PeriodIdx = NewType("PeriodIdx", int)
 
 
-@dataclasses.dataclass(frozen=True)
+@serde.serde
 class Ast:
     """
     A cohesive collection of Stops, Routes, Periods, SubPeriods, and TimeTables.
     """
 
-    routes: Sequence[Route]
-    stops: Sequence[Stop]
-    time_tables: Sequence[TimeTable]
+    routes: list[Route]
+    stops: list[Stop]
+    time_tables: list[TimeTable]
 
-    periods: Sequence[Period]
-    sub_periods: Sequence[SubPeriod]
+    periods: list[Period]
+    sub_periods: list[SubPeriod]
 
-    route_stops: dict[RouteIdx, Sequence[StopIdx]]
+    route_stops: dict[RouteIdx, list[StopIdx]]
     route_time_table: dict[RouteIdx, TimeTableIdx]
 
-    period_to_sub_periods: dict[PeriodIdx, Sequence[SubPeriodIdx]]
-    sub_period_routes: dict[SubPeriodIdx, Sequence[RouteIdx]]
+    period_to_sub_periods: dict[PeriodIdx, list[SubPeriodIdx]]
+    sub_period_routes: dict[SubPeriodIdx, list[RouteIdx]]
