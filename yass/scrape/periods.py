@@ -108,28 +108,30 @@ def _scrape_parts_from_part_div_els(
         if len(part_div_el) != 1:
             return None
 
-        span = part_div_el[0]
-        if len(span) < 1:
+        span_el = part_div_el[0]
+        if len(span_el) < 1:
             return None
 
-        begins = (
-            span[1].text.strip()
-            if len(span) > 1 and len(span[1].text.strip()) != 0
-            else None
-        )
+        a_el = span_el[0]
+        assert a_el.tag == "a"
 
-        link = span[0]
-        text = link.text.strip()
-
+        text = a_el.text.strip()
         if ROUTE_LINK_RE.match(text) is None:
             return None
 
-        attributes = link.attrib
-        if "href" not in attributes:
+        if "href" not in a_el.attrib:
             ctx.logger.warning("route '%s' doesn't have a valid href attribute", text)
             return None
 
-        return ScrapedRoute(text, attributes["href"], begins)
+        begins = None
+        if len(span_el) != 1:
+            nested_span_el = span_el[1]
+            nested_txt = nested_span_el.text.strip()
+
+            begins = nested_txt if len(nested_txt) != 0 else None
+
+        href = a_el.attrib["href"]
+        return ScrapedRoute(text, href, begins)
 
     def try_scrape_part(
         part_div_el: lxml.html.Element,
