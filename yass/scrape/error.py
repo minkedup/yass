@@ -2,7 +2,7 @@
 Scrape Error Types.
 """
 
-from typing import TypeGuard, TypeAlias
+from typing import TypeGuard, TypeAlias, Optional
 import lxml
 
 
@@ -12,7 +12,7 @@ class ScrapeError(Exception):
     """
 
 
-SingleQuery: TypeAlias = lxml.html.Element | None
+SingleQuery: TypeAlias = Optional[lxml.html.Element]
 
 
 def test_single_query(

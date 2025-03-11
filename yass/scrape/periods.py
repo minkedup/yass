@@ -40,7 +40,7 @@ import lxml.html
 from yass.types import ScrapeContext
 from yass.const import ROOT_SCHEDULE_URL
 
-from yass.scrape.error import test_single_query
+from yass.scrape.error import ScrapeError, test_single_query
 from yass.scrape.types import (
     ScrapedPeriodParts,
     ScrapedSubPeriodIdx,
@@ -72,18 +72,25 @@ def _get_parts_grp_div_el_from_period_h3_el(
     in the same group as the wrapper) is what we're after.
     """
 
-    m_h3_div_el = period_h3_el.getparent()
-    test_single_query(m_h3_div_el, period_h3_el, "div")
+    h3_div_el = period_h3_el.getparent()
+    test_single_query(h3_div_el, period_h3_el, "div")
 
-    m_pair_grp_div_el = m_h3_div_el.getparent()
-    test_single_query(m_pair_grp_div_el, m_h3_div_el, "div")
+    pair_grp_div_el = h3_div_el.getparent()
+    test_single_query(pair_grp_div_el, h3_div_el, "div")
 
-    # NOTE: assert that it is just the wrapper and another thing in the
-    # group; we assume that the element we're looking for comes after us
-    assert len(m_pair_grp_div_el) == 2
-    other_el = m_pair_grp_div_el[1]
+    not_h3_div_el: lxml.html.Element | None = None
 
-    return other_el
+    for pair_grp_el in pair_grp_div_el:
+        if pair_grp_el != h3_div_el:
+            not_h3_div_el = pair_grp_el
+            break
+
+    if not_h3_div_el is None:
+        raise ScrapeError(
+            f"could not find a paired <div> in el at line {pair_grp_div_el.sourceline}"
+        ) from None
+
+    return not_h3_div_el
 
 
 def _scrape_parts_from_part_div_els(
