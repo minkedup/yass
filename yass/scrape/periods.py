@@ -96,9 +96,11 @@ def _get_parts_grp_div_el_from_period_h3_el(
 def _scrape_parts_from_part_div_els(
     ctx: ScrapeContext, parts_group_div_el: lxml.html.Element
 ) -> ScrapedPeriodParts:
-    def try_scrape_sub_period(tlt: lxml.html.Element) -> ScrapedSubPeriod | None:
-        if tlt.tag == "h4":
-            text = tlt.text.strip()
+    def try_scrape_sub_period(
+        part_div_el: lxml.html.Element,
+    ) -> ScrapedSubPeriod | None:
+        if part_div_el.tag == "h4":
+            text = part_div_el.text.strip()
             return ScrapedSubPeriod(text)
         return None
 
