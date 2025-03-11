@@ -52,6 +52,8 @@ class AstBuilder:
     period_to_sub_periods: dict[PeriodIdx, list[SubPeriodIdx]]
     sub_period_routes: dict[SubPeriodIdx, list[RouteIdx]]
 
+    _stop_to_stop_idx: dict[Stop, StopIdx]
+
     def __init__(self) -> None:
         self.routes = []
         self.stops = []
@@ -65,6 +67,8 @@ class AstBuilder:
 
         self.period_to_sub_periods = {}
         self.sub_period_routes = {}
+
+        self._stop_to_stop_idx = {}
 
     def finish(self) -> Ast:
         """
@@ -82,6 +86,22 @@ class AstBuilder:
             period_to_sub_periods=self.period_to_sub_periods,
             sub_period_routes=self.sub_period_routes,
         )
+
+    def get_stop_idx(self, stop: Stop) -> StopIdx:
+        """
+        Get the StopIdx of a unique Stop within the AstBuilder; adds the Stop
+        and generates a StopIdx if it doesn't already exist.
+        """
+
+        if stop in self._stop_to_stop_idx:
+            return self._stop_to_stop_idx[stop]
+
+        idx = StopIdx(len(self.stops))
+        self.stops.append(stop)
+
+        self._stop_to_stop_idx[stop] = idx
+
+        return idx
 
 
 RAW_PERIOD_FLUFF_RE = re.compile(" *[Ss]huttle *[Ss]chedule")
@@ -171,15 +191,7 @@ def _time_table_n_stop(
     cols = []
 
     for stop, stop_part in r_columns:
-        if stop in u_stops:
-            # TODO: avoid having to do this lookup on misses
-            stop_idx = StopIdx(builder.stops.index(stop))
-        else:
-            stop_idx = StopIdx(len(builder.stops))
-            builder.stops.append(stop)
-
-            u_stops.add(stop)
-
+        stop_idx = builder.get_stop_idx(stop)
         cols.append((stop_idx, stop_part))
 
     def _time_table_cell(s_time_table_cell: ScrapedTimeTableCell) -> TimeTableCell:
