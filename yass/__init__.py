@@ -49,7 +49,7 @@ def get_logger(verbose: bool) -> logging.Logger:
 
 def scrape(args: argparse.Namespace) -> None:
     """
-    scrape subcomman
+    scrape subcommand
     """
     logger = get_logger(args.verbose)
     session = requests.Session()
@@ -60,8 +60,19 @@ def scrape(args: argparse.Namespace) -> None:
 
     ast = parse_ast(s_periods, s_time_tables)
 
-    serialized = serde.json.to_json(ast, indent=4)
-    print(serialized)
+    indent = 4 if args.pretty else None
+    serialized = serde.json.to_json(ast, indent=indent)
+
+    if args.output is not None:
+        outfile = open(args.output, "w", encoding="utf-8")
+    else:
+        outfile = sys.stdout
+
+    outfile.write(serialized)
+    outfile.write("\n")
+
+    if args.output:
+        outfile.close()
 
 
 COMMANDS = {
@@ -80,9 +91,14 @@ def main() -> None:
     )
 
     subparsers = parser.add_subparsers(dest="command")
-    _scrape_parser = subparsers.add_parser(
+    scrape_parser = subparsers.add_parser(
         "scrape", help="scrape rit bus schedule and output an ast"
     )
+    scrape_parser.add_argument("-o", "--output", help="output file", default=None)
+    scrape_parser.add_argument(
+        "-p", "--pretty", help="pretty print output", action="store_true"
+    )
+
     args = parser.parse_args()
 
     if not args.command in COMMANDS:
