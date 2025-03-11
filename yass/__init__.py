@@ -55,10 +55,10 @@ def scrape(args: argparse.Namespace) -> None:
     session = requests.Session()
     ctx = ScrapeContext(logger, session)
 
-    s_periods = scrape_periods(ctx)
-    s_time_tables = scrape_time_tables(ctx, s_periods)
+    periods = scrape_periods(ctx)
+    time_tables = scrape_time_tables(ctx, periods)
 
-    ast = parse_ast(s_periods, s_time_tables)
+    ast = parse_ast(periods, time_tables)
 
     indent = 4 if args.pretty else None
     serialized = serde.json.to_json(ast, indent=indent)
