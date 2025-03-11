@@ -24,8 +24,10 @@ Stop: TypeAlias = str
 StopIdx = NewType("StopIdx", int)
 
 
-TimeTableColumn: TypeAlias = tuple[StopIdx, StopPart]
 TimeTableCell: TypeAlias = datetime.time | Literal[""]
+
+TimeTableColumn: TypeAlias = tuple[StopIdx, StopPart]
+TimeTableRow: TypeAlias = list[TimeTableCell]
 
 
 @serde.serde
@@ -34,8 +36,8 @@ class TimeTable:
     A TimeTable (mapping of Stop + StopPart to rows of times).
     """
 
-    cols: list[TimeTableColumn]
-    time_matrix: list[list[TimeTableCell]]
+    columns: list[TimeTableColumn]
+    rows: list[TimeTableRow]
 
 
 TimeTableIdx = NewType("TimeTableIdx", int)
