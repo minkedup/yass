@@ -62,7 +62,7 @@ class PeriodsScrape:
     period_parts: Sequence[ScrapedPeriodParts]
 
 
-def _get_h3_group(
+def _get_parts_grp_div_el_from_period_h3_el(
     period_h3_el: lxml.html.Element,
 ) -> lxml.html.Element:
     """
@@ -71,32 +71,36 @@ def _get_h3_group(
     in the same group as the wrapper) is what we're after.
     """
 
-    wrapper = period_h3_el.getparent()
-    assert wrapper is not None
+    h3_div_el = period_h3_el.getparent()
+    assert h3_div_el is not None
+    assert h3_div_el.tag == "div"
 
-    group = wrapper.getparent()
-    assert group is not None
+    pair_grp_div_el = h3_div_el.getparent()
+    assert pair_grp_div_el is not None
+    assert pair_grp_div_el.tag == "div"
 
     # NOTE: assert that it is just the wrapper and another thing in the
     # group; we assume that the element we're looking for comes after us
-    assert len(group) == 2
-    other = group[1]
+    assert len(pair_grp_div_el) == 2
+    other_el = pair_grp_div_el[1]
 
-    return other
+    return other_el
 
 
-def _grp_parts(ctx: ScrapeContext, grp: lxml.html.Element) -> ScrapedPeriodParts:
-    def _try_ext_sub_period(tlt: lxml.html.Element) -> ScrapedSubPeriod | None:
+def _scrape_parts_from_part_div_els(
+    ctx: ScrapeContext, parts_group_div_el: lxml.html.Element
+) -> ScrapedPeriodParts:
+    def try_scrape_sub_period(tlt: lxml.html.Element) -> ScrapedSubPeriod | None:
         if tlt.tag == "h4":
             text = tlt.text.strip()
             return ScrapedSubPeriod(text)
         return None
 
-    def _try_ext_route(tlt: lxml.html.Element) -> ScrapedRoute | None:
-        if len(tlt) != 1:
+    def try_scrape_route(part_div_el: lxml.html.Element) -> ScrapedRoute | None:
+        if len(part_div_el) != 1:
             return None
 
-        span = tlt[0]
+        span = part_div_el[0]
         if len(span) < 1:
             return None
 
@@ -119,22 +123,22 @@ def _grp_parts(ctx: ScrapeContext, grp: lxml.html.Element) -> ScrapedPeriodParts
 
         return ScrapedRoute(text, attributes["href"], begins)
 
-    def _try_ext(
-        div: lxml.html.Element,
+    def try_scrape_part(
+        part_div_el: lxml.html.Element,
     ) -> ScrapedSubPeriod | ScrapedRoute | None:
         """
         Extract sub-periods (e.g. weekday) and routes (e.g. 1 off campus
         express).
         """
-        if len(div) != 1:
+        if len(part_div_el) != 1:
             return None
 
-        tlt = div[0]
-        m_sub_period = _try_ext_sub_period(tlt)
+        tlt = part_div_el[0]
+        m_sub_period = try_scrape_sub_period(tlt)
         if m_sub_period is not None:
             return m_sub_period
 
-        m_route = _try_ext_route(tlt)
+        m_route = try_scrape_route(tlt)
         return m_route
 
     routes: list[ScrapedRoute] = []
@@ -143,25 +147,25 @@ def _grp_parts(ctx: ScrapeContext, grp: lxml.html.Element) -> ScrapedPeriodParts
     sub_period_to_routes: dict[ScrapedSubPeriodIdx | None, list[ScrapedRouteIdx]] = {}
     sub_period_to_routes[None] = []
 
-    c_sub_period: ScrapedSubPeriodIdx | None = None
+    cur_sub_period: ScrapedSubPeriodIdx | None = None
 
-    for div in grp:
-        m_something = _try_ext(div)
-        if m_something is None:
+    for part_div_el in parts_group_div_el:
+        m_part = try_scrape_part(part_div_el)
+        if m_part is None:
             continue
 
-        if isinstance(m_something, ScrapedSubPeriod):
+        if isinstance(m_part, ScrapedSubPeriod):
             i_sub_period = ScrapedSubPeriodIdx(len(sub_periods))
-            sub_periods.append(m_something)
+            sub_periods.append(m_part)
 
-            c_sub_period = i_sub_period
-            sub_period_to_routes[c_sub_period] = []
+            cur_sub_period = i_sub_period
+            sub_period_to_routes[cur_sub_period] = []
             continue
 
         i_route = ScrapedRouteIdx(len(routes))
-        routes.append(m_something)
+        routes.append(m_part)
 
-        sub_period_to_routes[c_sub_period].append(i_route)
+        sub_period_to_routes[cur_sub_period].append(i_route)
 
     return ScrapedPeriodParts(routes, sub_periods, sub_period_to_routes)
 
@@ -175,27 +179,27 @@ def scrape_periods(ctx: ScrapeContext) -> PeriodsScrape:
     response = ctx.session.get(ROOT_SCHEDULE_URL)
     assert response.ok
 
-    tree: lxml.html.HtmlElement = lxml.html.fromstring(response.text)
-    query = tree.xpath("//body/descendant::h3")
+    root: lxml.html.HtmlElement = lxml.html.fromstring(response.text)
+    h3_query = root.xpath("//body/descendant::h3")
 
-    assert isinstance(query, list)
-    h3_els = cast(list[lxml.html.Element], query)
+    assert isinstance(h3_query, list)
+    h3_els = cast(list[lxml.html.Element], h3_query)
 
-    def is_period_el(h3_el: lxml.html.Element) -> bool:
+    def is_period_h3_el(h3_el: lxml.html.Element) -> bool:
         return h3_el.text.strip().endswith("Shuttle Schedule")
 
     def scrape_period(h3_el: lxml.html.Element) -> ScrapedPeriod:
         text = h3_el.text.strip()
         return ScrapedPeriod(text)
 
-    period_h3_els = list(filter(is_period_el, h3_els))
+    period_h3_els = list(filter(is_period_h3_el, h3_els))
 
     periods = list(map(scrape_period, period_h3_els))
     period_parts = []
 
-    period_grps = map(_get_h3_group, period_h3_els)
-    for period_grp in period_grps:
-        parts = _grp_parts(ctx, period_grp)
+    parts_group_div_els = map(_get_parts_grp_div_el_from_period_h3_el, period_h3_els)
+    for parts_group_div_el in parts_group_div_els:
+        parts = _scrape_parts_from_part_div_els(ctx, parts_group_div_el)
         period_parts.append(parts)
 
     return PeriodsScrape(periods, period_parts)
