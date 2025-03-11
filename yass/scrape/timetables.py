@@ -3,8 +3,6 @@ Scrape Timetable information from Routes.
 """
 
 from typing import Sequence, TypeAlias, cast
-import re
-import dataclasses
 import urllib.parse
 
 import lxml.html
@@ -13,8 +11,6 @@ from yass.types import ScrapeContext
 from yass.const import ROOT_SCHEDULE_URL
 
 from yass.scrape.types import (
-    ScrapedStop,
-    ScrapedStopPart,
     ScrapedTimeTable,
     ScrapedTimeTableColumn,
     ScrapedTimeTableCell,
