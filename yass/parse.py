@@ -203,7 +203,9 @@ def _time_table_n_stop(
     return TimeTable(columns, rows)
 
 
-def parse_ast(s_periods: PeriodsScrape, s_time_tables: TimeTablesScrape) -> Ast:
+def parse_ast(  # pylint: disable=too-many-locals
+    s_periods: PeriodsScrape, s_time_tables: TimeTablesScrape
+) -> Ast:
     """
     Parse scraped data into a cohesive AST.
     """
