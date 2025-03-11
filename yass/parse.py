@@ -34,7 +34,7 @@ from yass.scrape.periods import PeriodsScrape
 from yass.scrape.timetables import TimeTablesScrape
 
 
-class AstBuilder:  # pylint: disable=too-many-instance-attributes
+class AstBuilder:  # pylint: disable=too-many-instance-attributes, R0801
     """
     Utility class for building an AST.
     """
