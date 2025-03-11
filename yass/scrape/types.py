@@ -12,7 +12,7 @@ class ScrapedPeriod:
     A Schedule (e.g. "Spring 2025 Shuttle Schedule").
     """
 
-    name: str
+    text: str
 
 
 @dataclasses.dataclass(frozen=True)
@@ -22,7 +22,7 @@ class ScrapedSubPeriod:
     Schedules and Maps").
     """
 
-    name: str
+    text: str
 
 
 @dataclasses.dataclass(frozen=True)
@@ -31,7 +31,7 @@ class ScrapedRoute:
     A Route (e.g. "1 Off Campus Express").
     """
 
-    name: str
+    text: str
     href: str
     begins: str | None
 

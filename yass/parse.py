@@ -108,7 +108,7 @@ RAW_PERIOD_FLUFF_RE = re.compile(" *[Ss]huttle *[Ss]chedule")
 
 
 def _period(s_period: ScrapedPeriod) -> Period:
-    r_name = s_period.name
+    r_name = s_period.text
     name = RAW_PERIOD_FLUFF_RE.sub("", r_name).strip()
 
     return Period(name)
@@ -118,7 +118,7 @@ RAW_SUB_PERIOD_FLUFF_RE = re.compile("[Ss]huttle [Ss]chedules and [Mm]aps")
 
 
 def _sub_period(s_sub_period: ScrapedSubPeriod) -> SubPeriod:
-    r_name = s_sub_period.name
+    r_name = s_sub_period.text
     name = RAW_SUB_PERIOD_FLUFF_RE.sub("", r_name).strip()
 
     return SubPeriod(name)
@@ -129,7 +129,7 @@ RAW_ROUTE_DATE_RE = re.compile(r"^ *Begins *([0-9]*\/[0-9]*\/[0-9]*) *$")
 
 
 def _route(s_route: ScrapedRoute) -> Route:
-    r_name = s_route.name
+    r_name = s_route.text
 
     match = RAW_ROUTE_RE.match(r_name)
     assert match is not None
