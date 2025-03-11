@@ -91,7 +91,7 @@ def main() -> None:
         "-v", "--verbose", help="enable more verbose output", action="store_true"
     )
 
-    subparsers = parser.add_subparsers(dest="command")
+    subparsers = parser.add_subparsers(dest="command", required=True)
     scrape_parser = subparsers.add_parser(
         "scrape", help="scrape rit bus schedule and output an ast"
     )
