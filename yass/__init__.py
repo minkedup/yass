@@ -47,17 +47,10 @@ def get_logger(verbose: bool) -> logging.Logger:
     return root
 
 
-def main() -> None:
+def scrape(args: argparse.Namespace) -> None:
     """
-    Parse arguments and run Scraper.
+    scrape subcomman
     """
-
-    parser = argparse.ArgumentParser(prog="yass")
-    parser.add_argument(
-        "-v", "--verbose", help="enable more verbose output", action="store_true"
-    )
-    args = parser.parse_args()
-
     logger = get_logger(args.verbose)
     session = requests.Session()
     ctx = ScrapeContext(logger, session)
@@ -69,3 +62,31 @@ def main() -> None:
 
     serialized = serde.json.to_json(ast, indent=4)
     print(serialized)
+
+
+COMMANDS = {
+    "scrape": scrape,
+}
+
+
+def main() -> None:
+    """
+    Parse arguments and run Scraper.
+    """
+
+    parser = argparse.ArgumentParser(prog="yass")
+    parser.add_argument(
+        "-v", "--verbose", help="enable more verbose output", action="store_true"
+    )
+
+    subparsers = parser.add_subparsers(dest="command")
+    _scrape_parser = subparsers.add_parser(
+        "scrape", help="scrape rit bus schedule and output an ast"
+    )
+    args = parser.parse_args()
+
+    if not args.command in COMMANDS:
+        print(f"error: unrecognized command: {args.command}", file=sys.stderr)
+        sys.exit(1)
+
+    COMMANDS[args.command](args)
