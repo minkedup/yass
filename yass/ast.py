@@ -2,11 +2,11 @@
 An AST.
 """
 
+# pylint: disable=too-few-public-methods
+
 from typing import TypeAlias, NewType, Literal
 import enum
 import datetime
-import dataclasses
-
 import serde
 
 
