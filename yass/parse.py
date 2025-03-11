@@ -34,7 +34,7 @@ from yass.scrape.periods import PeriodsScrape
 from yass.scrape.timetables import TimeTablesScrape
 
 
-class AstBuilder:
+class AstBuilder:  # pylint: disable=too-many-instance-attributes
     """
     Utility class for building an AST.
     """
@@ -185,14 +185,12 @@ RAW_CELL_TIME_FORMAT = "%I:%M %p"
 def _time_table_n_stop(
     builder: AstBuilder, s_time_table: ScrapedTimeTable
 ) -> TimeTable:
-    u_stops = set(builder.stops)
     r_columns = list(map(_stop, s_time_table.columns))
-
-    cols = []
+    columns = []
 
     for stop, stop_part in r_columns:
         stop_idx = builder.get_stop_idx(stop)
-        cols.append((stop_idx, stop_part))
+        columns.append((stop_idx, stop_part))
 
     def _time_table_cell(s_time_table_cell: ScrapedTimeTableCell) -> TimeTableCell:
         if s_time_table_cell is None:
@@ -201,10 +199,8 @@ def _time_table_n_stop(
         date_time = datetime.datetime.strptime(s_time_table_cell, RAW_CELL_TIME_FORMAT)
         return date_time.time()
 
-    time_matrix = list(
-        map(lambda row: list(map(_time_table_cell, row)), s_time_table.values)
-    )
-    return TimeTable(cols, time_matrix)
+    rows = list(map(lambda row: list(map(_time_table_cell, row)), s_time_table.values))
+    return TimeTable(columns, rows)
 
 
 def parse_ast(s_periods: PeriodsScrape, s_time_tables: TimeTablesScrape) -> Ast:
