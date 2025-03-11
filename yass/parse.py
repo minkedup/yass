@@ -31,7 +31,7 @@ from yass.scrape.types import (
     ScrapedTimeTableColumn,
 )
 from yass.scrape.periods import PeriodsScrape
-from yass.scrape.timetables import TimeTablesScrape
+from yass.scrape.timetables import ScrapedTimeTables
 
 
 class AstBuilder:  # pylint: disable=too-many-instance-attributes, R0801
@@ -204,7 +204,7 @@ def _time_table_n_stop(
 
 
 def parse_ast(  # pylint: disable=too-many-locals
-    s_periods: PeriodsScrape, s_time_tables: TimeTablesScrape
+    s_periods: PeriodsScrape, s_time_tables: ScrapedTimeTables
 ) -> Ast:
     """
     Parse scraped data into a cohesive AST.

@@ -66,3 +66,6 @@ class ScrapedTimeTable:
 
     columns: Sequence[ScrapedTimeTableColumn]
     values: Sequence[Sequence[ScrapedTimeTableCell]]
+
+
+ScrapedTimeTables: TypeAlias = Sequence[dict[ScrapedRouteIdx, ScrapedTimeTable]]
