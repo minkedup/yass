@@ -20,7 +20,9 @@ from yass.scrape.types import (
 from yass.scrape.periods import PeriodsScrape
 
 
-def scrape_time_table(ctx: ScrapeContext, route: ScrapedRoute) -> ScrapedTimeTable:
+def scrape_time_table(  # pylint: disable=too-many-locals
+    ctx: ScrapeContext, route: ScrapedRoute
+) -> ScrapedTimeTable:
     """
     Scrape Timetables from a route-specific page.
     """
