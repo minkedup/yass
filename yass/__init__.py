@@ -2,7 +2,7 @@
 Yet Another (RIT Bus) Schedule Scraper.
 """
 
-from typing import MutableSequence, TypeAlias, Iterable, Literal, Any, cast
+from typing import MutableSequence, TextIO, TypeAlias, Iterable, Literal, Any, cast
 import re
 import sys
 import enum
@@ -63,6 +63,7 @@ def scrape(args: argparse.Namespace) -> None:
     indent = 4 if args.pretty else None
     serialized = serde.json.to_json(ast, indent=indent)
 
+    outfile: TextIO | None = None
     if args.output is not None:
         outfile = open(args.output, "w", encoding="utf-8")
     else:
