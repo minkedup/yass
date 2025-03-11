@@ -25,7 +25,7 @@ StopIdx = NewType("StopIdx", int)
 
 
 TimeTableColumn: TypeAlias = tuple[StopIdx, StopPart]
-TimeTableCell: TypeAlias = datetime.time | Literal["none"]
+TimeTableCell: TypeAlias = datetime.time | Literal[""]
 
 
 @serde.serde

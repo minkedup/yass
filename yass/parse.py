@@ -184,7 +184,7 @@ def _time_table_n_stop(
 
     def _time_table_cell(s_time_table_cell: ScrapedTimeTableCell) -> TimeTableCell:
         if s_time_table_cell is None:
-            return "none"
+            return ""
 
         date_time = datetime.datetime.strptime(s_time_table_cell, RAW_CELL_TIME_FORMAT)
         return date_time.time()
