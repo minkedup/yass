@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## [2.0.0] - 2025-03-11
 
 ### Added
 
@@ -9,6 +9,8 @@
 ### Changed
 
 - Changed typedefs in AST to be compatible with `pyserde` for serialization.
+- Refactored typedefs for scraped information.
+- Added more semantic errors for issues.
 
 ## [1.0.0] - 2025-03-07
 
