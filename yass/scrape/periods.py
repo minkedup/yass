@@ -31,7 +31,7 @@ Assumes that the main page will have the following layout:
 ```
 """
 
-from typing import Sequence, cast
+from typing import Sequence, TypeGuard, Optional, cast
 import re
 import dataclasses
 
@@ -40,6 +40,7 @@ import lxml.html
 from yass.types import ScrapeContext
 from yass.const import ROOT_SCHEDULE_URL
 
+from yass.scrape.error import ScrapeError
 from yass.scrape.types import (
     ScrapedPeriodParts,
     ScrapedSubPeriodIdx,
@@ -71,13 +72,31 @@ def _get_parts_grp_div_el_from_period_h3_el(
     in the same group as the wrapper) is what we're after.
     """
 
+    def check_el(
+        query: Optional[lxml.html.Element], source: lxml.html.Element, e_tag: str
+    ) -> TypeGuard[lxml.html.Element]:
+        if query is None:
+            raise ScrapeError(
+                (
+                    f"{source.tag} el at line {source.sourceline}"
+                    f" has no parent; expected <{e_tag}>"
+                )
+            ) from None
+        if query.tag != e_tag:
+            raise ScrapeError(
+                (
+                    f"{source.tag} el at line {source.sourceline}"
+                    f" has tag {query.tag}; expected <{e_tag}>"
+                )
+            ) from None
+
+        return True
+
     h3_div_el = period_h3_el.getparent()
-    assert h3_div_el is not None
-    assert h3_div_el.tag == "div"
+    check_el(h3_div_el, period_h3_el, "div")
 
     pair_grp_div_el = h3_div_el.getparent()
-    assert pair_grp_div_el is not None
-    assert pair_grp_div_el.tag == "div"
+    check_el(pair_grp_div_el, h3_div_el, "div")
 
     # NOTE: assert that it is just the wrapper and another thing in the
     # group; we assume that the element we're looking for comes after us
