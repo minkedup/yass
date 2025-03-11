@@ -15,9 +15,9 @@ class StopPart(enum.Enum):
     A part of a Stop (e.g. Gleason Circle *Arrival*).
     """
 
-    NONE = "none"
-    ARRIVAL = "arrival"
-    DEPARTURE = "departure"
+    UNKNOWN = 0
+    ARRIVAL = 1
+    DEPARTURE = 2
 
 
 Stop: TypeAlias = str
