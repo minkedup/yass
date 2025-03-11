@@ -135,7 +135,7 @@ def _route(s_route: ScrapedRoute) -> Route:
 LAST_WORD_RE = re.compile("(.*) (.*)$")
 
 
-def _stop(s_time_table_col: ScrapedTimeTableColumn) -> tuple[Stop, StopPart | None]:
+def _stop(s_time_table_col: ScrapedTimeTableColumn) -> tuple[Stop, StopPart]:
     last_match = LAST_WORD_RE.match(s_time_table_col)
     last = last_match[2] if last_match is not None else None
 
@@ -147,7 +147,7 @@ def _stop(s_time_table_col: ScrapedTimeTableColumn) -> tuple[Stop, StopPart | No
         assert last_match is not None
         stop = last_match[1].strip()
     except ValueError:
-        stop_part = None
+        stop_part = StopPart("none")
         stop = s_time_table_col
 
     return (stop, stop_part)
@@ -178,7 +178,7 @@ def _time_table_n_stop(
 
     def _time_table_cell(s_time_table_cell: ScrapedTimeTableCell) -> TimeTableCell:
         if s_time_table_cell is None:
-            return None
+            return "none"
 
         date_time = datetime.datetime.strptime(s_time_table_cell, RAW_CELL_TIME_FORMAT)
         return date_time.time()

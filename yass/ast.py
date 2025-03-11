@@ -2,7 +2,7 @@
 An AST.
 """
 
-from typing import TypeAlias, NewType
+from typing import TypeAlias, NewType, Literal
 import enum
 import datetime
 import dataclasses
@@ -15,6 +15,7 @@ class StopPart(enum.Enum):
     A part of a Stop (e.g. Gleason Circle *Arrival*).
     """
 
+    NONE = "none"
     ARRIVAL = "arrival"
     DEPARTURE = "departure"
 
@@ -23,8 +24,8 @@ Stop: TypeAlias = str
 StopIdx = NewType("StopIdx", int)
 
 
-TimeTableColumn: TypeAlias = tuple[StopIdx, StopPart | None]
-TimeTableCell: TypeAlias = datetime.time | None
+TimeTableColumn: TypeAlias = tuple[StopIdx, StopPart]
+TimeTableCell: TypeAlias = datetime.time | Literal["none"]
 
 
 @serde.serde
