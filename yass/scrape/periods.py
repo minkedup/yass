@@ -1,5 +1,34 @@
 """
-Parse Schedules from the main campus shuttles page.
+Parse Schedules from the RIT Campus Shuttles page.
+
+Assumes that the main page will have the following layout:
+
+```html
+<!-- pair group -->
+<div>
+    <div>
+        <h3>PERIOD_NAME</h3>
+    </div>
+    <!-- parts group -->
+    <div>
+        <!-- part_div_n -->
+        <div>
+            <div>
+                <h4>SUB_PERIOD_1</h4>
+            </div>
+        </div>
+        <div>
+            <div>
+                <span>
+                    <a href="ROUTE_HREF">ROUTE_NAME</a>
+                    <span>ROUTE_BEGINS</span>
+                </span>
+            </div>
+        </div>
+        <!-- ... -->
+    </div>
+</div>
+```
 """
 
 from typing import Sequence, cast
